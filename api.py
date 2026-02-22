@@ -2,7 +2,11 @@ from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
 from optimum.onnxruntime import ORTModelForSeq2SeqLM
 from transformers import AutoTokenizer
-import pycld2
+from huggingface_hub import snapshot_download
+
+import pycld2, os
+
+my_env = os.environ.get("ENV")
 
 api = FastAPI()
 api.add_middleware(CORSMiddleware, 
@@ -12,12 +16,14 @@ api.add_middleware(CORSMiddleware,
                    allow_headers=["*"])
 
 # loading fr-en model and tokenizer 
-fr_en_model_path ="marian-mt-fr-en-onnx"
+fr_en_model_path ="marian-mt-fr-en-onnx" if my_env == "dev" else snapshot_download(repo_id="jovialsoh/marian-mt-fr-en-onnx")
+
 fr_en_tokenizer = AutoTokenizer.from_pretrained(fr_en_model_path)
 fr_en_model = ORTModelForSeq2SeqLM.from_pretrained(fr_en_model_path, use_cache=False)
 
 #loading en-fr model an tokenizer 
-en_fr_model_path = "marian-mt-en-fr-onnx"
+en_fr_model_path ="marian-mt-en-fr-onnx" if my_env == "dev" else snapshot_download(repo_id="jovialsoh/marian-mt-en-fr-onnx")
+
 en_fr_tokenizer = AutoTokenizer.from_pretrained(en_fr_model_path)
 en_fr_model = ORTModelForSeq2SeqLM.from_pretrained(en_fr_model_path, use_cache=False)
 

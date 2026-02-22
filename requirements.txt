@@ -1,0 +1,9 @@
+fastapi
+uvicorn 
+
+optimum[onnxruntime]
+transformers
+
+pycld2
+huggingface_hub
+huggingface
